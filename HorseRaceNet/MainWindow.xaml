@@ -1,12 +1,71 @@
-﻿<Window x:Class="HorseRaceNet.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:HorseRaceNet"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+﻿<controls:MetroWindow x:Class="HorseRaceNet.MainWindow"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:local="clr-namespace:HorseRaceNet"
+                      xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+                      xmlns:vm="clr-namespace:HorseRaceNet.ViewModels"
+                      mc:Ignorable="d"
+                      GlowBrush="{DynamicResource AccentColorBrush}"
+                      BorderThickness="1"
+                      WindowStartupLocation="CenterScreen"
+                      ResizeMode="CanResizeWithGrip"
+                      Title="Horse Race .NET" 
+                      Height="350"    
+                      Width="525">
+    <controls:MetroWindow.DataContext>
+        <vm:MainWindowViewModel/>
+    </controls:MetroWindow.DataContext>
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Column="0" 
+                     Text="{Binding HorseName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     controls:TextBoxHelper.Watermark="Horse name"
+                     controls:TextBoxHelper.UseFloatingWatermark="True"
+                     controls:TextBoxHelper.ClearTextButton="True"
+                     controls:TextBoxHelper.SelectAllOnFocus="True">
+                <TextBox.InputBindings>
+                    <KeyBinding Key="Return" Command="{Binding AddHorseCommand}"/>
+                </TextBox.InputBindings>
+            </TextBox>
+            <Button Grid.Column="1" Content="Add" Width="50" Command="{Binding AddHorseCommand}"/>
+        </Grid>
+        <Border Grid.Row="1" BorderThickness="2" Margin="5">
+            <ItemsControl Margin="5" ItemsSource="{Binding Horses}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderThickness="1" BorderBrush="{Binding IsWinner, Converter={StaticResource BooleanToColorConverter}}">
+                            <Grid Margin="5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="80"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding Name}" VerticalAlignment="Center"/>
+                                <controls:MetroProgressBar Grid.Column="1" Minimum="0" Maximum="500" Value="{Binding Position}"/>
+                                <Button Grid.Column="2" 
+                                        Content="X"
+                                        Margin="10,0,0,0"
+                                        Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type controls:MetroWindow}}, 
+                                                          Path=DataContext.RemoveHorseCommand, 
+                                                          UpdateSourceTrigger=PropertyChanged}"
+                                        CommandParameter="{Binding}"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                 </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
+        <Button Grid.Row="2" Content="Start race" Margin="5" Command="{Binding StartRaceCommand}"/>
     </Grid>
-</Window>
+</controls:MetroWindow>
